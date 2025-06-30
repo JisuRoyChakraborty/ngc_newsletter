@@ -116,8 +116,40 @@
       return re.test(email.toLowerCase());
     }
 
+    function disableForm() {
+      const form = document.getElementById('subscribe-form');
+      const emailInput = document.getElementById('email');
+      const button = form.querySelector('button');
+
+      emailInput.disabled = true;
+      button.disabled = true;
+      button.textContent = 'Subscribed';
+
+      let msg = document.getElementById('subscribed-msg');
+      if (!msg) {
+        msg = document.createElement('div');
+        msg.id = 'subscribed-msg';
+        msg.style.marginTop = '15px';
+        msg.style.color = '#4a90e2';
+        msg.style.fontWeight = '600';
+        msg.textContent = 'You have already subscribed from this device.';
+        form.parentNode.appendChild(msg);
+      }
+    }
+
+    // Check subscription on load
+    if (localStorage.getItem('subscribed')) {
+      disableForm();
+    }
+
     document.getElementById('subscribe-form').addEventListener('submit', async function (e) {
       e.preventDefault();
+
+      if (localStorage.getItem('subscribed')) {
+        alert('You have already subscribed from this device.');
+        disableForm();
+        return;
+      }
 
       const emailInput = document.getElementById('email');
       const email = emailInput.value.trim();
@@ -141,7 +173,8 @@
 
         if (response.ok) {
           alert('Thanks for subscribing!');
-          this.reset();
+          localStorage.setItem('subscribed', 'true');
+          disableForm();
         } else {
           alert('Oops! Something went wrong.');
         }
