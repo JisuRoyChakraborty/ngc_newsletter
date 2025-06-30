@@ -4,51 +4,151 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Subscribe to Newsletter</title>
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .logo {
+      margin-bottom: 30px;
+    }
+
+    .logo img {
+      max-height: 80px;
+      max-width: 150px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input[type="email"] {
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="email"]:focus {
+      outline: none;
+      border-color: #4a90e2;
+      box-shadow: 0 0 6px #4a90e2aa;
+    }
+
+    button {
+      background-color: #4a90e2;
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #357ABD;
+    }
+
+    .footer {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
-  <h2>Subscribe to our Newsletter</h2>
-  <form id="subscribe-form">
-    <input
-      type="email"
-      id="email"
-      name="email"
-      placeholder="Enter your email"
-      required
-    />
-    <button type="submit">Subscribe</button>
-  </form>
+  <div class="container">
+    <div class="logo">
+      <img src="ngc_transparent.png" alt="NGC Logo" />
+    </div>
+
+    <h2>Subscribe to our Newsletter</h2>
+
+    <form id="subscribe-form" novalidate>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        required
+      />
+      <button type="submit">Subscribe</button>
+    </form>
+
+    <div class="footer">
+      We respect your privacy. No spam ever.
+    </div>
+  </div>
 
   <script>
-    const webhookURL = 'https://canary.discord.com/api/webhooks/1389239002879754392/o0JCmBIRdrhgt7AxI7Pd7LuZ_5DA5CzN3L-9pFYhIa2FhlEdLrcdh3YV7BfSI-ECphUU'; // Replace this!
+    const webhookURL = 'https://canary.discord.com/api/webhooks/1389239002879754392/o0JCmBIRdrhgt7AxI7Pd7LuZ_5DA5CzN3L-9pFYhIa2FhlEdLrcdh3YV7BfSI-ECphUU';
 
-    document
-      .getElementById('subscribe-form')
-      .addEventListener('submit', async function (e) {
-        e.preventDefault();
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email.toLowerCase());
+    }
 
-        const email = document.getElementById('email').value;
+    document.getElementById('subscribe-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-        const payload = {
-          content: `📩 New newsletter subscriber: **${email}**`,
-        };
+      const emailInput = document.getElementById('email');
+      const email = emailInput.value.trim();
 
-        try {
-          const response = await fetch(webhookURL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
+      if (!isValidEmail(email)) {
+        alert('Please enter a valid email address.');
+        emailInput.focus();
+        return;
+      }
 
-          if (response.ok) {
-            alert('Thanks for subscribing!');
-            this.reset();
-          } else {
-            alert('Oops! Something went wrong.');
-          }
-        } catch (error) {
-          alert('Network error, please try again later.');
+      const payload = {
+        content: `📩 New newsletter subscriber: **${email}**`,
+      };
+
+      try {
+        const response = await fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          alert('Thanks for subscribing!');
+          this.reset();
+        } else {
+          alert('Oops! Something went wrong.');
         }
-      });
+      } catch (error) {
+        alert('Network error, please try again later.');
+      }
+    });
   </script>
 </body>
 </html>
