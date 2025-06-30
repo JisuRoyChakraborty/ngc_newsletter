@@ -132,12 +132,24 @@
         msg.style.marginTop = '15px';
         msg.style.color = '#4a90e2';
         msg.style.fontWeight = '600';
-        msg.textContent = 'You have already subscribed from this device.';
+        msg.innerHTML = `
+          You have already subscribed from this device.<br />
+          <button id="reset-btn" style="margin-top: 10px; background: none; border: none; color: #4a90e2; text-decoration: underline; cursor: pointer;">
+            Entered wrong email? Click here
+          </button>
+        `;
         form.parentNode.appendChild(msg);
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+          localStorage.removeItem('subscribed');
+          emailInput.disabled = false;
+          button.disabled = false;
+          button.textContent = 'Subscribe';
+          msg.remove();
+        });
       }
     }
 
-    // Check subscription on load
     if (localStorage.getItem('subscribed')) {
       disableForm();
     }
@@ -161,7 +173,17 @@
       }
 
       const payload = {
-        content: `📩 New newsletter subscriber: **${email}**`,
+        embeds: [
+          {
+            title: "📩 New Newsletter Subscriber",
+            description: `**Email:** \`${email}\``,
+            color: 0x4a90e2,
+            footer: {
+              text: "NGC Newsletter Signup",
+            },
+            timestamp: new Date().toISOString()
+          }
+        ]
       };
 
       try {
