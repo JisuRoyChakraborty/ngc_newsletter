@@ -1,1 +1,1 @@
-# ngc_newsletter
+# OK
